@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MatiDev Airsoft Calc</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --font-main: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        body { 
+            background-color: #000; 
+            color: #fff; 
+            font-family: var(--font-main);
+            -webkit-font-smoothing: antialiased;
+        }
+        .card { background-color: #0a0a0a; border: 1px solid #1f1f1f; }
+        
+        /* Čísla v polích budou mít "technický" mono font */
+        input, select { 
+            background-color: #ffffff !important; 
+            color: #000000 !important; 
+            border: 2px solid #333;
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+        input:focus { border-color: #fff; outline: none; }
+        
+        .result-box { background-color: #fff; color: #000; }
+        .result-value { font-family: var(--font-mono); font-weight: 700; }
+        
+        .label-text { 
+            color: #666; 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.15em; 
+            font-weight: 700;
+        }
+        
+        .btn-donate { 
+            background-color: #fff; 
+            color: #000; 
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            transition: all 0.2s ease;
+        }
+    </style>
+</head>
+<body class="p-4 min-h-screen flex flex-col items-center">
+
+    <header class="max-w-md w-full text-center py-6">
+        <h1 class="text-4xl font-black italic tracking-tighter uppercase leading-none">MatiDev</h1>
+        <p class="text-[9px] text-zinc-500 tracking-[0.5em] mt-2 font-bold uppercase">Ballistics Division</p>
+    </header>
+
+    <main class="max-w-md w-full space-y-4">
+        
+        <section class="card p-6 rounded-2xl shadow-2xl">
+            <h2 class="label-text mb-5 text-white">Current Build</h2>
+            <div class="grid grid-cols-2 gap-4 mb-5">
+                <div>
+                    <label class="label-text block mb-1.5">Muzzle FPS</label>
+                    <input type="text" id="fps" placeholder="0" class="w-full p-3 rounded-xl text-xl">
+                </div>
+                <div>
+                    <label class="label-text block mb-1.5">BB Weight</label>
+                    <input type="text" id="weight" placeholder="0.20" value="0.20" class="w-full p-3 rounded-xl text-xl">
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="label-text block mb-1.5">Platform</label>
+                <select id="gun-type" class="w-full p-3 rounded-xl text-sm appearance-none">
+                    <option value="0.75">Pistol / AEP</option>
+                    <option value="1.0" selected>Standard AEG / GBB</option>
+                    <option value="1.2">DMR / Long Barrel</option>
+                    <option value="1.4">Bolt Action Sniper</option>
+                </select>
+            </div>
+
+            <div class="result-box p-5 rounded-2xl text-center mb-4">
+                <span class="label-text opacity-40 block mb-1">Muzzle Energy</span>
+                <span id="res-joules" class="result-value text-5xl tracking-tighter">0.00J</span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-zinc-900/50 p-3 rounded-xl text-center border border-zinc-800">
+                    <span class="label-text block text-[9px] mb-1">Max Range</span>
+                    <span id="res-max" class="result-value text-xl">0m</span>
+                </div>
+                <div class="bg-zinc-900/50 p-3 rounded-xl text-center border border-zinc-800">
+                    <span class="label-text block text-[9px] mb-1">Effective</span>
+                    <span id="res-eff" class="result-value text-xl text-zinc-400">0m</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="card p-6 rounded-2xl">
+            <h2 class="label-text mb-4 text-white">Limit Optimizer</h2>
+            <div class="mb-4">
+                <label class="label-text block mb-1.5">Field Limit (Joules)</label>
+                <input type="text" id="target-j" placeholder="1.7" class="w-full p-3 rounded-xl text-xl">
+            </div>
+
+            <div id="opt-box" class="hidden space-y-3 animate-in fade-in duration-500">
+                <div class="bg-white text-black p-4 rounded-xl text-center">
+                    <p class="label-text text-zinc-400 mb-1">Ideal BB Mass</p>
+                    <p id="rec-weight" class="result-value text-2xl">---</p>
+                </div>
+                <div class="bg-zinc-900 p-3 rounded-xl text-center border border-zinc-800">
+                    <p class="label-text text-zinc-500 mb-1">Velocity Limit</p>
+                    <p id="target-fps" class="result-value text-sm text-white uppercase">---</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card p-6 rounded-2xl border-zinc-800">
+            <div class="text-center">
+                <h3 class="label-text text-zinc-400 mb-4">Support development</h3>
+                <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=f10603007@gmail.com&item_name=MatiDev+Airsoft+Calculator+Donation&currency_code=USD" 
+                   target="_blank" 
+                   class="btn-donate block w-full py-4 rounded-xl uppercase text-sm shadow-lg">
+                    Send a Tip via PayPal
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-8 text-center text-zinc-800 pb-10">
+        <p class="text-[10px] uppercase font-bold tracking-[0.3em]">© 2026 MATIDEV SYSTEMS</p>
+    </footer>
+
+    <script>
+        const fpsIn = document.getElementById('fps');
+        const weightIn = document.getElementById('weight');
+        const gunIn = document.getElementById('gun-type');
+        const targetIn = document.getElementById('target-j');
+        const resJ = document.getElementById('res-joules');
+        const resM = document.getElementById('res-max');
+        const resE = document.getElementById('res-eff');
+        const optBox = document.getElementById('opt-box');
+        const recW = document.getElementById('rec-weight');
+        const tFPS = document.getElementById('target-fps');
+
+        function cleanVal(val) {
+            if(!val) return 0;
+            return parseFloat(val.toString().replace(',', '.'));
+        }
+
+        function calculate() {
+            const fps = cleanVal(fpsIn.value);
+            const grams = cleanVal(weightIn.value);
+            const mult = parseFloat(gunIn.value);
+
+            if (fps > 0 && grams > 0) {
+                const ms = fps * 0.3048;
+                const joules = 0.5 * (grams/1000) * (ms * ms);
+                resJ.innerText = joules.toFixed(2) + "J";
+                
+                const dist = Math.sqrt(joules) * 40 * mult;
+                resM.innerText = Math.round(dist) + "m";
+                resE.innerText = Math.round(dist * 0.75) + "m";
+                
+                optimize();
+            } else {
+                resJ.innerText = "0.00J";
+                resM.innerText = "0m";
+                resE.innerText = "0m";
+            }
+        }
+
+        function optimize() {
+            const limitJ = cleanVal(targetIn.value);
+            if (!limitJ || limitJ <= 0) {
+                optBox.classList.add('hidden');
+                return;
+            }
+
+            optBox.classList.remove('hidden');
+            
+            let bestW = 0.25;
+            if (limitJ >= 1.2) bestW = 0.28;
+            if (limitJ >= 1.5) bestW = 0.32;
+            if (limitJ >= 2.0) bestW = 0.40;
+            if (limitJ >= 2.6) bestW = 0.45;
+            if (limitJ >= 3.0) bestW = 0.48;
+
+            recW.innerText = bestW.toFixed(2) + "g";
+
+            const limitMS = Math.sqrt((2 * limitJ) / (bestW / 1000));
+            const limitFPS = Math.round(limitMS / 0.3048);
+
+            tFPS.innerText = limitFPS + " FPS @ " + bestW.toFixed(2) + "g";
+        }
+
+        [fpsIn, weightIn, gunIn, targetIn].forEach(el => {
+            el.addEventListener('input', calculate);
+        });
+    </script>
+</body>
+</html>
