@@ -1,129 +1,166 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MatiDev Airsoft: Tactical Operations 2026</title>
+    <title>MatiDev Airsoft: Tactical Elite Operations 2026</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Orbitron:wght@400;700&display=swap');
 
-        body { margin: 0; overflow: hidden; background-color: #050505; font-family: 'Orbitron', sans-serif; color: white; user-select: none; }
-        canvas { display: block; }
+        body { margin: 0; overflow: hidden; background-color: #020202; font-family: 'Orbitron', sans-serif; color: #fff; user-select: none; }
+        canvas { display: block; filter: contrast(1.1) brightness(0.9); }
 
-        /* --- MENU STYLES --- */
+        /* --- REKLAMNÍ KONTEJNERY --- */
+        .ad-top { position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 3000; height: 60px; overflow: hidden; }
+        .ad-overlay { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; }
+
+        /* --- UI OVERLAY --- */
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: radial-gradient(circle, rgba(20,35,20,0.95) 0%, rgba(0,0,0,1) 100%);
-            z-index: 1000;
+            background: radial-gradient(circle, rgba(10,25,10,0.98) 0%, rgba(0,0,0,1) 100%);
+            z-index: 2000; transition: opacity 0.5s;
         }
 
-        h1 { font-family: 'Black Ops One'; font-size: clamp(30px, 8vw, 70px); color: #76b041; margin-bottom: 20px; text-shadow: 0 0 20px rgba(118, 176, 65, 0.5); }
+        h1 { font-family: 'Black Ops One'; font-size: clamp(40px, 8vw, 80px); color: #76b041; text-shadow: 0 0 30px rgba(118, 176, 65, 0.4); margin: 0; text-align: center; }
+        .sub-h { color: #555; letter-spacing: 5px; margin-bottom: 30px; text-align: center; }
+
+        .menu-box { background: rgba(255, 255, 255, 0.03); padding: 40px; border: 1px solid #333; border-radius: 20px; backdrop-filter: blur(10px); text-align: center; }
         
-        .menu-box { background: rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 15px; border: 1px solid #333; backdrop-filter: blur(10px); text-align: center; }
-
         button {
-            background: linear-gradient(180deg, #333 0%, #111 100%);
-            color: #eee; border: 1px solid #555; padding: 12px 25px;
-            font-family: 'Black Ops One'; cursor: pointer; transition: 0.2s;
-            margin: 5px; min-width: 180px; letter-spacing: 1px;
+            background: linear-gradient(180deg, #2a2a2a 0%, #111 100%);
+            color: #eee; border: 1px solid #444; padding: 15px 40px;
+            font-family: 'Black Ops One'; cursor: pointer; transition: all 0.2s;
+            margin: 10px; text-transform: uppercase; min-width: 250px; font-size: 18px;
         }
-        button:hover { background: #76b041; color: #000; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(118, 176, 65, 0.4); }
-        button.active { border: 2px solid #76b041; color: #76b041; }
+        button:hover { background: #76b041; color: #000; transform: scale(1.05); box-shadow: 0 0 20px rgba(118, 176, 65, 0.5); }
+        
+        /* --- ARMORY SHOP --- */
+        .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; width: 80%; max-height: 50vh; overflow-y: auto; padding: 20px; }
+        .weapon-card { background: #111; border: 1px solid #222; padding: 20px; border-radius: 10px; text-align: center; cursor: pointer; }
+        .weapon-card:hover { border-color: #76b041; background: #151a12; }
+        .weapon-card.equipped { border-color: #76b041; background: #1a2a1a; box-shadow: inset 0 0 10px #76b041; }
+        .price { color: #ffd700; font-weight: bold; margin: 10px 0; }
 
-        /* --- SHOP STYLES --- */
-        .shop-container { width: 90%; max-width: 1100px; height: 70vh; display: flex; flex-direction: column; }
-        .item-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 15px; overflow-y: auto; padding: 20px; background: rgba(0,0,0,0.6);
-            border: 1px solid #444; border-radius: 8px;
-        }
-        .weapon-card {
-            background: #1a1a1a; border: 1px solid #333; padding: 15px;
-            border-radius: 8px; text-align: center; cursor: pointer; transition: 0.3s;
-        }
-        .weapon-card:hover { border-color: #76b041; background: #222; }
-        .weapon-card.owned { border-color: #ffd700; }
-        .weapon-card.equipped { background: #2e3b23; border-color: #76b041; box-shadow: inset 0 0 10px #76b041; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="menu-screen" class="screen">
+    <div id="ad-top-container" class="ad-top hidden">
+        <script type="text/javascript">
+            atOptions = {
+                'key' : 'cf089b2a7eaeb93e5550a0cb37786397',
+                'format' : 'iframe',
+                'height' : 60,
+                'width' : 468,
+                'params' : {}
+            };
+        </script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/cf089b2a7eaeb93e5550a0cb37786397/invoke.js"></script>
+    </div>
+
+    <div id="main-menu" class="screen">
         <h1>MATIDEV AIRSOFT</h1>
+        <div class="sub-h">TACTICAL ELITE OPERATIONS</div>
         <div class="menu-box">
-            <div style="margin-bottom: 15px; color: #76b041;">SELECT OPERATION AREA</div>
-            <div class="btn-group">
-                <button onclick="setMap('meadow')" id="m-meadow" class="active">MEADOW</button>
-                <button onclick="setMap('forest')" id="m-forest">FOREST</button>
-                <button onclick="setMap('desert')" id="m-desert">DESERT</button>
-                <button onclick="setMap('city')" id="m-city">CITY</button>
-            </div>
-            <div style="margin-top: 25px;">
-                <button onclick="openShop()">ARMORY (SHOP)</button>
-                <button onclick="startGame()" style="background: #76b041; color: #000;">START GAME</button>
-            </div>
+            <button onclick="startGame()">START MISSION</button><br>
+            <button onclick="toggleScreen('shop-screen', true)">ARMORY (SHOP)</button>
         </div>
+        <script src="https://pl28531145.effectivegatecpm.com/93/4b/18/934b18e17cf08c55def0e9c32f4e6b93.js"></script>
     </div>
 
     <div id="shop-screen" class="screen hidden">
-        <h1>ARMORY</h1>
-        <div class="shop-container">
-            <div style="display: flex; justify-content: center; margin-bottom: 10px;">
-                <button onclick="renderShop('primary')" id="t-primary">PRIMARY</button>
-                <button onclick="renderShop('secondary')" id="t-secondary">SECONDARY</button>
-                <button onclick="renderShop('usables')" id="t-usables">USABLES</button>
-            </div>
-            <div id="item-grid" class="item-grid"></div>
-            <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 24px; color: #ffd700;">BUDGET: $<span id="shop-money">0</span></div>
-                <button onclick="closeShop()">BACK TO MENU</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="death-screen" class="screen hidden">
-        <h1 style="color: #ff4444;">KILLED IN ACTION</h1>
-        <p id="stats-text" style="font-size: 20px;"></p>
-        <button onclick="location.reload()">RETRY MISSION</button>
+        <h1 style="font-size: 40px;">REGIMENT ARMORY</h1>
+        <div style="font-size: 24px; color: #ffd700; margin-bottom: 10px;">CREDITS: $<span id="shop-money">0</span></div>
+        <div class="shop-grid" id="shop-container"></div>
+        <button onclick="toggleScreen('shop-screen', false)">BACK TO HQ</button>
     </div>
 
     <canvas id="gameCanvas"></canvas>
 
+    <div id="death-screen" class="screen hidden">
+        <h1 style="color: #ff4444;">WIA / KIA</h1>
+        <div id="end-stats" style="font-size: 20px; margin: 20px;"></div>
+        <button onclick="location.reload()">RESPAWN</button>
+    </div>
+
 <script>
-    /* --- DATA & CONFIG --- */
+    /* --- ENGINE & DATA --- */
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     const WEAPONS = {
-        mp5: { id:'mp5', name:'MP5', cat:'primary', price:600, dmg:18, rate:100, clip:30, res:150, spread:0.1, speed:4.0 },
-        p90: { id:'p90', name:'P90', cat:'primary', price:900, dmg:16, rate:70, clip:50, res:200, spread:0.15, speed:4.2 },
-        m4: { id:'m4', name:'M4A1', cat:'primary', price:0, dmg:26, rate:130, clip:30, res:120, spread:0.05, speed:3.5 },
-        g36: { id:'g36', name:'G36C', cat:'primary', price:1200, dmg:28, rate:140, clip:30, res:120, spread:0.06, speed:3.4 },
-        akm: { id:'akm', name:'AKM', cat:'primary', price:1500, dmg:38, rate:180, clip:30, res:120, spread:0.09, speed:3.2 },
-        sr25: { id:'sr25', name:'SR-25', cat:'primary', price:2500, dmg:65, rate:450, clip:15, res:60, spread:0.01, speed:3.1 },
-        svd: { id:'svd', name:'SVD', cat:'primary', price:3200, dmg:85, rate:600, clip:10, res:50, spread:0.01, speed:2.9 },
-        l96: { id:'l96', name:'L96 AWP', cat:'primary', price:4500, dmg:160, rate:1500, clip:5, res:30, spread:0.0, speed:2.6 },
-        vsr10: { id:'vsr10', name:'VSR-10', cat:'primary', price:4200, dmg:150, rate:1400, clip:5, res:30, spread:0.0, speed:2.8 },
-        glock: { id:'glock', name:'Glock 17', cat:'secondary', price:0, dmg:22, rate:300, clip:17, res:68, spread:0.08, speed:4.5 },
-        aap01: { id:'aap01', name:'AAP-01', cat:'secondary', price:500, dmg:18, rate:90, clip:22, res:88, spread:0.12, speed:4.5 },
-        p1911: { id:'p1911', name:'M1911', cat:'secondary', price:600, dmg:38, rate:400, clip:7, res:49, spread:0.05, speed:4.3 },
-        cz75: { id:'cz75', name:'CZ-75', cat:'secondary', price:750, dmg:25, rate:320, clip:16, res:64, spread:0.06, speed:4.4 },
-        hicapa: { id:'hicapa', name:'Hi-Capa', cat:'secondary', price:1000, dmg:30, rate:250, clip:28, res:84, spread:0.07, speed:4.3 },
-        vz61: { id:'vz61', name:'Vz.61', cat:'secondary', price:1300, dmg:16, rate:95, clip:20, res:100, spread:0.2, speed:4.2 },
-        smoke: { id:'smoke', name:'Smoke', cat:'usables', price:250 },
-        heal: { id:'heal', name:'Medkit', cat:'usables', price:400 },
-        grenade: { id:'grenade', name:'Frag', cat:'usables', price:500 },
-        ammobox: { id:'ammobox', name:'Ammo Box', cat:'usables', price:350 }
+        m4: { id:'m4', name:'M4A1 SOPMOD', type:'primary', price:0, dmg:30, rate:120, clip:30, res:120, spread:0.04, spd:3.2, sound:220 },
+        ak47: { id:'ak47', name:'AK-47', type:'primary', price:1200, dmg:45, rate:180, clip:30, res:90, spread:0.09, spd:2.9, sound:180 },
+        awp: { id:'awp', name:'L96 AWP', type:'primary', price:4000, dmg:160, rate:1500, clip:5, res:25, spread:0, spd:2.4, sound:100 },
+        glock: { id:'glock', name:'Glock 17', type:'secondary', price:0, dmg:20, rate:250, clip:17, res:68, spread:0.06, spd:4.0, sound:400 },
+        deagle: { id:'deagle', name:'D. Eagle', type:'secondary', price:1500, dmg:60, rate:600, clip:7, res:28, spread:0.1, spd:3.6, sound:150 },
+        grenade: { id:'grenade', name:'M67 FRAG', type:'usable', price:400 },
+        medkit: { id:'medkit', name:'MEDKIT', type:'usable', price:500 }
     };
 
-    let state = { money: 0, owned: ['m4', 'glock'], loadout: { primary: 'm4', secondary: 'glock' }, inv: { heal: 1, grenade: 1, smoke: 1 }, map: 'meadow', wave: 1, isPlay: false };
-    let player, enemies = [], bullets = [], obstacles = [], foliage = [], camera = { x: 0, y: 0 };
+    let state = { money: 500, owned: ['m4', 'glock'], primary: 'm4', secondary: 'glock', inv: { grenade: 2, medkit: 1 }, wave: 1, isPlay: false };
+    let player, enemies = [], bullets = [], obstacles = [], foliage = [], grenades = [], particles = [], camera = { x: 1500, y: 1500, shake: 0 };
     const keys = {}, mouse = { wx: 0, wy: 0, down: false };
 
-    /* --- UTILS --- */
+    /* --- CLASSES --- */
+    class Particle {
+        constructor(x, y, color, speed, life) {
+            this.x = x; this.y = y; this.color = color;
+            this.vx = (Math.random()-0.5)*speed; this.vy = (Math.random()-0.5)*speed;
+            this.life = life; this.maxLife = life; this.size = Math.random()*3+1;
+        }
+        draw() {
+            ctx.globalAlpha = this.life/this.maxLife; ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.size, this.size); ctx.globalAlpha = 1;
+        }
+    }
+
+    class Actor {
+        constructor(x, y, hp) { this.x = x; this.y = y; this.hp = hp; this.maxHp = hp; this.angle = 0; this.radius = 24; }
+        draw(c1, c2) {
+            ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.angle);
+            ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.arc(5, 5, 24, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = c1; ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = c2; ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#111'; ctx.fillRect(10, -5, 35, 10);
+            ctx.restore();
+        }
+    }
+
+    class Player extends Actor {
+        constructor() {
+            super(1500, 1500, 100); this.slot = 'primary'; this.reloading = false; this.lastShot = 0;
+            this.weps = {
+                primary: { ...WEAPONS[state.primary], ammo: WEAPONS[state.primary].clip },
+                secondary: { ...WEAPONS[state.secondary], ammo: WEAPONS[state.secondary].clip }
+            };
+        }
+        update() {
+            const w = this.weps[this.slot];
+            let mx = (keys['d']?1:0) - (keys['a']?1:0), my = (keys['s']?1:0) - (keys['w']?1:0);
+            let s = w.spd; if (mx && my) s *= 0.707;
+            if (!collide(this.x + mx*s, this.y, this.radius)) this.x += mx*s;
+            if (!collide(this.x, this.y + my*s, this.radius)) this.y += my*s;
+            this.angle = Math.atan2(mouse.wy - this.y, mouse.wx - this.x);
+
+            if (mouse.down && !this.reloading && w.ammo > 0 && Date.now() - this.lastShot > w.rate) {
+                w.ammo--; this.lastShot = Date.now();
+                sfx(w.sound, 'sawtooth', 0.1, 0.1);
+                bullets.push({ x:this.x, y:this.y, vx:Math.cos(this.angle + (Math.random()-0.5)*w.spread)*25, vy:Math.sin(this.angle + (Math.random()-0.5)*w.spread)*25, owner:'p', dmg:w.dmg, life:80 });
+                camera.shake = 5;
+            }
+        }
+    }
+
+    /* --- CORE LOGIC --- */
+    function collide(x, y, r) {
+        if (x < 60 || x > 2940 || y < 60 || y > 2940) return true;
+        return obstacles.some(o => x+r > o.x && x-r < o.x+o.w && y+r > o.y && y-r < o.y+o.h);
+    }
+
     function sfx(f, t, d, v) {
         try {
             const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
@@ -132,126 +169,49 @@
             g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d);
             o.connect(g); g.connect(audioCtx.destination);
             o.start(); o.stop(audioCtx.currentTime + d);
-        } catch(e){}
+        } catch(e) {}
     }
 
-    function collide(x, y, r) {
-        if (x < 70 || x > 2930 || y < 70 || y > 2930) return true;
-        for (let o of obstacles) { if (x+r > o.x && x-r < o.x+o.w && y+r > o.y && y-r < o.y+o.h) return true; }
-        return false;
-    }
-
-    /* --- ACTORS --- */
-    class Actor {
-        constructor(x, y, isPlayer) {
-            this.x = x; this.y = y; this.isPlayer = isPlayer;
-            this.hp = 100; this.angle = 0; this.radius = 22;
+    function spawnWave() {
+        for(let i=0; i < 3 + state.wave; i++) {
+            let rx, ry; do { rx = Math.random()*3000; ry = Math.random()*3000; } while(collide(rx, ry, 30) || Math.hypot(rx-player.x, ry-player.y) < 700);
+            enemies.push({ x:rx, y:ry, hp:50+(state.wave*10), angle:0, radius:24, lastShot:0 });
         }
-        draw(bodyCol, helmCol) {
-            ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.angle);
-            // Hands
-            ctx.fillStyle = '#d2b48c'; ctx.beginPath(); ctx.arc(15, 15, 7, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(15, -15, 7, 0, Math.PI*2); ctx.fill();
-            // Body
-            ctx.fillStyle = bodyCol; ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI*2); ctx.fill();
-            ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
-            // Helmet
-            ctx.fillStyle = helmCol; ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI*2); ctx.fill();
-            // Weapon
-            ctx.fillStyle = '#111'; let wLen = this.isPlayer ? (player.slot === 'primary' ? 38 : 18) : 30; ctx.fillRect(12, -4, wLen, 8);
-            ctx.restore();
-        }
-    }
-
-    class Player extends Actor {
-        constructor() {
-            super(1500, 1500, true); this.slot = 'primary'; this.reloading = false;
-            this.wep = {
-                primary: { ...WEAPONS[state.loadout.primary], ammo: WEAPONS[state.loadout.primary].clip },
-                secondary: { ...WEAPONS[state.loadout.secondary], ammo: WEAPONS[state.loadout.secondary].clip }
-            };
-        }
-        update() {
-            const w = this.wep[this.slot];
-            let spd = w.speed;
-            let dx = (keys['d']?1:0) - (keys['a']?1:0);
-            let dy = (keys['s']?1:0) - (keys['w']?1:0);
-            if (dx && dy) spd *= 0.707;
-            let nx = this.x + dx * spd, ny = this.y + dy * spd;
-            if (!collide(nx, ny, this.radius)) { this.x = nx; this.y = ny; }
-            this.angle = Math.atan2(mouse.wy - this.y, mouse.wx - this.x);
-
-            if (mouse.down && !this.reloading && w.ammo > 0 && Date.now() - (w.lastShot||0) > w.rate) {
-                w.ammo--; w.lastShot = Date.now();
-                sfx(w.cat==='primary'?200:350, 'sawtooth', 0.1, 0.08);
-                const spr = (Math.random()-0.5)*w.spread;
-                bullets.push({ x:this.x, y:this.y, vx:Math.cos(this.angle+spr)*24, vy:Math.sin(this.angle+spr)*24, owner:'p', dmg:w.dmg, life:90 });
-            }
-        }
-        reload() {
-            const w = this.wep[this.slot];
-            if (this.reloading || w.ammo === w.clip || w.res <= 0) return;
-            this.reloading = true; sfx(400, 'sine', 0.5, 0.05);
-            setTimeout(() => { let take = Math.min(w.clip - w.ammo, w.res); w.ammo += take; w.res -= take; this.reloading = false; }, 1500);
-        }
-    }
-
-    class Bot extends Actor {
-        constructor(x, y) { super(x, y, false); this.hp = 40 + (state.wave*10); this.lastShot = 0; this.tx = x; this.ty = y; }
-        update() {
-            const d = Math.hypot(player.x - this.x, player.y - this.y);
-            if (d < 650) {
-                this.angle = Math.atan2(player.y - this.y, player.x - this.x);
-                if (d > 250) {
-                    let nx = this.x + Math.cos(this.angle)*2, ny = this.y + Math.sin(this.angle)*2;
-                    if (!collide(nx, ny, this.radius)) { this.x = nx; this.y = ny; }
-                }
-                if (Date.now() - this.lastShot > 2000 - (state.wave*100)) {
-                    this.lastShot = Date.now(); sfx(150, 'sawtooth', 0.1, 0.05);
-                    bullets.push({ x:this.x, y:this.y, vx:Math.cos(this.angle)*14, vy:Math.sin(this.angle)*14, owner:'e', dmg:10, life:70 });
-                }
-            } else {
-                if (Math.hypot(this.tx - this.x, this.ty - this.y) < 40) { this.tx = this.x + (Math.random()-0.5)*600; this.ty = this.y + (Math.random()-0.5)*600; }
-                let a = Math.atan2(this.ty - this.y, this.tx - this.x); this.angle = a;
-                let nx = this.x + Math.cos(a)*1.5, ny = this.y + Math.sin(a)*1.5;
-                if (!collide(nx, ny, this.radius)) { this.x = nx; this.y = ny; }
-            }
-        }
-    }
-
-    /* --- ENGINE --- */
-    function initWorld() {
-        obstacles = []; foliage = [];
-        for (let i = 0; i < 40; i++) {
-            let w = 150+Math.random()*250, h = 150+Math.random()*250, x = Math.random()*(3000-w), y = Math.random()*(3000-h);
-            if (!obstacles.some(o => !(x+w+100 < o.x || x > o.x+o.w+100 || y+h+100 < o.y || y > o.y+o.h+100)) && Math.hypot(x-1500,y-1500)>400) obstacles.push({x,y,w,h});
-        }
-        for (let i = 0; i < 150; i++) foliage.push({ x:Math.random()*3000, y:Math.random()*3000, r:30+Math.random()*40, type:Math.random()>0.4?'tree':'bush' });
     }
 
     function startGame() {
         if(audioCtx.state === 'suspended') audioCtx.resume();
-        document.getElementById('menu-screen').classList.add('hidden');
-        initWorld(); player = new Player(); enemies = []; state.wave = 1; state.isPlay = true; spawnWave();
-        loop();
+        document.getElementById('main-menu').classList.add('hidden');
+        document.getElementById('ad-top-container').classList.remove('hidden');
+        obstacles = []; for(let i=0; i<30; i++) obstacles.push({x:Math.random()*2500, y:Math.random()*2500, w:200, h:200});
+        player = new Player(); spawnWave(); state.isPlay = true; loop();
     }
-
-    function spawnWave() { for(let i=0; i<2+state.wave; i++) { let x, y; do { x=Math.random()*3000; y=Math.random()*3000; } while(collide(x,y,40) || Math.hypot(x-player.x, y-player.y)<800); enemies.push(new Bot(x,y)); } }
 
     function loop() {
         if (!state.isPlay) return;
-        if (player.hp <= 0) { state.isPlay = false; document.getElementById('death-screen').classList.remove('hidden'); return; }
-
         player.update();
-        enemies.forEach(e => e.update());
-        for (let i = bullets.length-1; i >= 0; i--) {
-            let b = bullets[i]; b.x += b.vx; b.y += b.vy; b.life--;
-            if (collide(b.x, b.y, 3)) b.life = 0;
+        
+        // AI & Bullets
+        enemies.forEach((e, i) => {
+            let d = Math.hypot(player.x-e.x, player.y-e.y); e.angle = Math.atan2(player.y-e.y, player.x-e.x);
+            if (d < 500 && Date.now() - e.lastShot > 1000) {
+                e.lastShot = Date.now();
+                bullets.push({ x:e.x, y:e.y, vx:Math.cos(e.angle)*15, vy:Math.sin(e.angle)*15, owner:'e', dmg:10, life:100 });
+            }
+        });
+
+        bullets.forEach((b, i) => {
+            b.x += b.vx; b.y += b.vy; b.life--;
             if (b.owner === 'p') {
-                enemies.forEach((e, ei) => { if (Math.hypot(b.x-e.x, b.y-e.y) < 28) { e.hp -= b.dmg; b.life = 0; if(e.hp<=0) { enemies.splice(ei,1); state.money+=100; } } });
-            } else if (Math.hypot(b.x-player.x, b.y-player.y) < 24) { player.hp -= b.dmg; b.life = 0; }
-            if (b.life <= 0) bullets.splice(i,1);
-        }
+                enemies.forEach((en, ei) => {
+                    if (Math.hypot(b.x-en.x, b.y-en.y) < 25) { en.hp -= b.dmg; bullets.splice(i,1); if(en.hp<=0){ enemies.splice(ei,1); state.money+=150; } }
+                });
+            } else if (Math.hypot(b.x-player.x, b.y-player.y) < 22) { player.hp -= b.dmg; bullets.splice(i,1); camera.shake=10; }
+            if (b.life <= 0 || collide(b.x, b.y, 2)) bullets.splice(i,1);
+        });
+
         if (enemies.length === 0) { state.wave++; spawnWave(); }
+        if (player.hp <= 0) { state.isPlay = false; document.getElementById('death-screen').classList.remove('hidden'); }
 
         camera.x += (player.x - canvas.width/2 - camera.x) * 0.1;
         camera.y += (player.y - canvas.height/2 - camera.y) * 0.1;
@@ -262,93 +222,48 @@
 
     function draw() {
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        ctx.fillStyle = { meadow:'#3e4c36', forest:'#1a2615', desert:'#c2a065', city:'#333' }[state.map];
-        ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = '#2a3524'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.save(); ctx.translate(-camera.x + (Math.random()-0.5)*camera.shake, -camera.y + (Math.random()-0.5)*camera.shake);
+        if(camera.shake > 0) camera.shake *= 0.9;
 
-        ctx.save(); ctx.translate(-camera.x, -camera.y);
-        ctx.strokeStyle = '#000'; ctx.lineWidth = 20; ctx.strokeRect(0,0,3000,3000);
-        ctx.strokeStyle = '#76b041'; ctx.lineWidth = 4; ctx.strokeRect(10,10,2980,2980);
-        
-        obstacles.forEach(o => { ctx.fillStyle='#1a1a1a'; ctx.fillRect(o.x,o.y,o.w,o.h); ctx.strokeStyle='#444'; ctx.lineWidth=2; ctx.strokeRect(o.x,o.y,o.w,o.h); });
-        
-        ctx.strokeStyle='rgba(255,0,0,0.15)'; ctx.beginPath(); ctx.moveTo(player.x,player.y); ctx.lineTo(player.x+Math.cos(player.angle)*1500, player.y+Math.sin(player.angle)*1500); ctx.stroke();
-
-        enemies.forEach(e => e.draw('#4a3728', '#111'));
-        player.draw('#2e3b23', '#4b5320');
-        bullets.forEach(b => { ctx.fillStyle=b.owner==='p'?'#ffd700':'#f44'; ctx.beginPath(); ctx.arc(b.x,b.y,4,0,Math.PI*2); ctx.fill(); });
-        
-        foliage.forEach(f => { ctx.fillStyle=f.type==='tree'?'rgba(10,30,10,0.9)':'rgba(40,60,30,0.7)'; ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill(); });
+        ctx.strokeStyle = '#76b041'; ctx.lineWidth = 10; ctx.strokeRect(5,5,2990,2990);
+        obstacles.forEach(o => { ctx.fillStyle = '#111'; ctx.fillRect(o.x, o.y, o.w, o.h); });
+        bullets.forEach(b => { ctx.fillStyle = b.owner==='p'?'#ff0':'#f00'; ctx.beginPath(); ctx.arc(b.x,b.y,4,0,Math.PI*2); ctx.fill(); });
+        enemies.forEach(e => {
+            ctx.save(); ctx.translate(e.x, e.y); ctx.rotate(e.angle);
+            ctx.fillStyle='#4a3c28'; ctx.beginPath(); ctx.arc(0,0,24,0,Math.PI*2); ctx.fill();
+            ctx.restore();
+        });
+        player.draw('#2e3b23', '#3d451e');
         ctx.restore();
 
-        // --- DRAW HUD (CANVAS NATIVE) ---
-        if (state.isPlay) {
-            ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0, 0, canvas.width, 70);
-            
-            // HP Bar
-            ctx.fillStyle = '#333'; ctx.fillRect(20, 20, 200, 30);
-            ctx.fillStyle = player.hp > 30 ? '#76b041' : '#ff4444';
-            ctx.fillRect(20, 20, (player.hp/100)*200, 30);
-            ctx.strokeStyle = '#fff'; ctx.strokeRect(20, 20, 200, 30);
-            
-            // Text Info
-            ctx.font = 'bold 25px Orbitron'; ctx.fillStyle = '#ff4444'; ctx.textAlign = 'center';
-            ctx.fillText("WAVE " + state.wave, canvas.width/2, 45);
-            
-            ctx.fillStyle = '#ffd700'; ctx.textAlign = 'left';
-            ctx.fillText("$ " + state.money, 240, 45);
-            
-            // Weapon Info
-            const w = player.wep[player.slot];
-            ctx.textAlign = 'right'; ctx.fillStyle = '#76b041'; ctx.font = 'bold 40px Orbitron';
-            ctx.fillText(`${w.ammo} / ${w.res}`, canvas.width - 20, canvas.height - 40);
-            ctx.font = '15px Orbitron'; ctx.fillStyle = '#aaa';
-            ctx.fillText(w.name + (player.reloading ? " (RELOADING...)" : ""), canvas.width - 20, canvas.height - 90);
-            
-            // Inv
-            ctx.textAlign = 'center'; ctx.font = '13px Orbitron'; ctx.fillStyle = '#fff';
-            ctx.fillText(`[H] MEDKIT: ${state.inv.heal}  [G] FRAG: ${state.inv.grenade}  [S] SMOKE: ${state.inv.smoke}`, canvas.width/2, canvas.height - 20);
-        }
+        // HUD
+        ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(0,0,canvas.width, 80);
+        ctx.fillStyle = '#76b041'; ctx.font = 'bold 25px Orbitron'; ctx.fillText(`HP: ${player.hp}  $${state.money}  WAVE: ${state.wave}`, 30, 50);
+        const w = player.weps[player.slot];
+        ctx.textAlign = 'right'; ctx.fillText(`${w.name}: ${w.ammo}/${w.res}`, canvas.width-30, 50);
     }
 
-    /* --- UI HANDLERS --- */
-    function openShop() { document.getElementById('menu-screen').classList.add('hidden'); document.getElementById('shop-screen').classList.remove('hidden'); renderShop('primary'); }
-    function closeShop() { document.getElementById('shop-screen').classList.add('hidden'); document.getElementById('menu-screen').classList.remove('hidden'); }
-    function setMap(m) { state.map = m; document.querySelectorAll('.btn-group button').forEach(b => b.classList.remove('active')); document.getElementById('m-'+m).classList.add('active'); }
-    
-    function renderShop(cat) {
-        document.querySelectorAll('.shop-container button').forEach(b => b.classList.remove('active'));
-        if(document.getElementById('t-'+cat)) document.getElementById('t-'+cat).classList.add('active');
-        const grid = document.getElementById('item-grid'); grid.innerHTML = '';
+    function toggleScreen(id, s) { document.getElementById(id).classList.toggle('hidden', !s); if(id==='shop-screen' && s) renderShop(); }
+    function renderShop() {
+        const cont = document.getElementById('shop-container'); cont.innerHTML = '';
         document.getElementById('shop-money').innerText = state.money;
-        Object.values(WEAPONS).filter(w => w.cat === cat).forEach(w => {
-            const isOwned = state.owned.includes(w.id) || cat === 'usables';
-            const isEq = state.loadout.primary === w.id || state.loadout.secondary === w.id;
-            const card = document.createElement('div'); card.className = `weapon-card ${isOwned?'owned':''} ${isEq?'equipped':''}`;
-            card.innerHTML = `<b>${w.name}</b><br><span style="color:#76b041">$${w.price}</span>`;
+        Object.values(WEAPONS).forEach(w => {
+            const card = document.createElement('div'); card.className = `weapon-card ${state.primary===w.id || state.secondary===w.id ? 'equipped' : ''}`;
+            card.innerHTML = `<h3>${w.name}</h3><div class="price">$${w.price}</div>`;
             card.onclick = () => {
-                if(isOwned) {
-                    if(cat==='primary') state.loadout.primary = w.id;
-                    if(cat==='secondary') state.loadout.secondary = w.id;
-                    if(cat==='usables' && state.money >= w.price) { state.money -= w.price; state.inv[w.id]++; }
-                } else if(state.money >= w.price) { state.money -= w.price; state.owned.push(w.id); }
-                renderShop(cat);
+                if (!state.owned.includes(w.id) && state.money >= w.price) { state.money -= w.price; state.owned.push(w.id); }
+                else if (state.owned.includes(w.id)) { if(w.type==='primary') state.primary=w.id; else state.secondary=w.id; }
+                renderShop();
             };
-            grid.appendChild(card);
+            cont.appendChild(card);
         });
     }
 
-    /* --- INPUTS --- */
-    window.onkeydown = e => {
-        keys[e.key.toLowerCase()] = true;
-        if(e.key === '1') player.slot = 'primary';
-        if(e.key === '2') player.slot = 'secondary';
-        if(e.key === 'r') player.reload();
-        if(e.key === 'h' && state.inv.heal > 0 && player.hp < 100) { player.hp = Math.min(100, player.hp+40); state.inv.heal--; sfx(500,'sine',0.2,0.1); }
-    };
+    window.onkeydown = e => { keys[e.key.toLowerCase()] = true; if(e.key==='1') player.slot='primary'; if(e.key==='2') player.slot='secondary'; };
     window.onkeyup = e => keys[e.key.toLowerCase()] = false;
+    window.onmousedown = () => mouse.down = true; window.onmouseup = () => mouse.down = false;
     window.onmousemove = e => { mouse.wx = e.clientX + camera.x; mouse.wy = e.clientY + camera.y; };
-    window.onmousedown = () => mouse.down = true;
-    window.onmouseup = () => mouse.down = false;
 </script>
 </body>
 </html>
